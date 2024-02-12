@@ -14,12 +14,24 @@ class UsersRepository extends Repository<User> {
   }
 
   public async findById(id: string): Promise<User | undefined> {
-    const user = this.findById(id);
+    const user = this.findOne({
+      where: {
+        id,
+      },
+    })
 
     return user;
   }
 
-  //public findByEmail(email: string): Promise<User | undefined> {}
+  public findByEmail(email: string): Promise<User | undefined> {
+    const user = this.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return user;
+  }
 }
 
 export default UsersRepository;
