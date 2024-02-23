@@ -1,9 +1,10 @@
-import { compare } from "bcryptjs";
-import { getCustomRepository } from "typeorm";
+import { compare } from 'bcryptjs';
+import { getCustomRepository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
-import User from "../typeorm/entities/User";
-import UsersRepository from "../typeorm/repositories/UsersRepository";
-import authConfig from "@config/auth";
+import User from '../typeorm/entities/User';
+import UsersRepository from '../typeorm/repositories/UsersRepository';
+import authConfig from '@config/auth';
+import AppError from '@shared/errors/AppError';
 
 interface IRequest {
   email: string;
@@ -16,30 +17,30 @@ interface IResponse {
 }
 
 class CreateSessionsService {
-  public async execute({email, password}: IRequest): Promise<IResponse> {
+  public async execute({ email, password }: IRequest): Promise<IResponse> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const user = await usersRepository.findByEmail(email);
 
-    if(!user) {
-      throw new Error('Incorrect email/password combination.');
+    if (!user) {
+      throw new AppError('Incorrect email/password combination.');
     }
 
     const passwordMatched = await compare(password, user.password);
 
-    if(!passwordMatched) {
-      throw new Error('Incorrect email/password combination.');
+    if (!passwordMatched) {
+      throw new AppError('Incorrect email/password combination.');
     }
 
     const token = sign({}, authConfig.jwt.secret, {
       subject: user.id,
-      expiresIn: authConfig.jwt.expiresIn
-     })
+      expiresIn: authConfig.jwt.expiresIn,
+    });
 
     return {
       user,
-      token
-    }
+      token,
+    };
   }
 }
 
