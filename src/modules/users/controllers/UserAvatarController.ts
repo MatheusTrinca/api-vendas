@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
-import User from '../typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
 
 class UserAvatarController {
-  public async update(request: Request, response: Response): Promise<User> {
+  public async update(request: Request, response: Response): Promise<Response> {
     const updateUserAvatarService = new UpdateUserAvatarService();
 
     if (!request.file) {
@@ -16,7 +15,7 @@ class UserAvatarController {
       avatarFileName: request.file.filename,
     });
 
-    return user;
+    return response.json(user);
   }
 }
 
