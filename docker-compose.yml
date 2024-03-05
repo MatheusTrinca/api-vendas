@@ -11,6 +11,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - '8080:8080'
+
 volumes:
   postgres_data:
     driver: local
+# Acesse o Adminer em http://localhost:8080 (ou substitua localhost pelo IP do seu servidor, se estiver usando um servidor remoto).
+# Na tela inicial do Adminer, você verá campos para preencher com as informações de conexão do banco de dados.
+# No campo "Sistema de gerenciamento", selecione "PostgreSQL".
+# Preencha os campos "Servidor", "Nome do usuário" e "Senha" com as informações corretas para se conectar ao seu banco de dados PostgreSQL.
+# Servidor: postgres (nome do serviço definido no arquivo docker-compose.yml)
+# Nome do usuário: postgres
+# Senha: docker (a senha que você definiu no arquivo docker-compose.yml ou a senha real do seu banco de dados)
+# Deixe o campo "Banco de dados" em branco, ou especifique o nome do banco de dados que deseja acessar.
+# Clique em "Login" para conectar-se ao banco de dados.
