@@ -11,7 +11,7 @@ interface IParseMailVariable {
 }
 
 interface IParseMailTemplate {
-  template: string;
+  file: string;
   variables: IParseMailVariable;
 }
 
