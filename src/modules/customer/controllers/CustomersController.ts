@@ -30,7 +30,7 @@ class CustomersController {
     const { name, email } = request.body;
 
     const customer = await createCustumerService.execute({ name, email });
-
+    console.log('LOG', customer);
     return response.json(customer);
   }
 
