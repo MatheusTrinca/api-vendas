@@ -1,5 +1,6 @@
 import Customer from '@modules/customer/typeorm/entities/Customer';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -18,6 +19,9 @@ class Order {
   @ManyToOne(() => Customer)
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
+
+  @Column('uuid')
+  customer_id: string;
 
   @OneToMany(() => OrdersProducts, order_products => order_products.order, {
     cascade: true,
