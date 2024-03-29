@@ -7,7 +7,6 @@ import AppError from '@shared/errors/AppError';
 
 interface IProduct {
   id: string;
-  price: number;
   quantity: number;
 }
 
@@ -22,9 +21,9 @@ class CreateOrderService {
     const customerRepository = getCustomRepository(CustomersRepository);
     const productsRepository = getCustomRepository(ProductRepository);
 
-    const customer = await customerRepository.findById(customer_id);
+    const customerExists = await customerRepository.findById(customer_id);
 
-    if (!customer) {
+    if (!customerExists) {
       throw new AppError('Could not find any customer with the given id', 404);
     }
 
@@ -54,9 +53,33 @@ class CreateOrderService {
 
     if (notAvailableQuantity.length) {
       throw new AppError(
-        `Not available quantity for the product with id ${notAvailableQuantity[0].id}`,
+        `The quantity ${notAvailableQuantity[0].quantity} is not available for the product with id ${notAvailableQuantity[0].id}`,
       );
     }
+
+    const serializedProducts = products.map(product => ({
+      product_id: product.id,
+      quantity: product.quantity,
+      price: existsProducts.filter(p => p.id === product.id)[0].price,
+    }));
+
+    const order = await ordersRepository.createOrder({
+      customer: customerExists,
+      products: serializedProducts,
+    });
+
+    const { order_products } = order;
+
+    const updateProductQuantity = order_products.map(product => ({
+      id: product.product_id,
+      quantity:
+        existsProducts.filter(p => p.id === product.product_id)[0].quantity -
+        product.quantity,
+    }));
+
+    await productsRepository.save(updateProductQuantity);
+
+    return order;
   }
 }
 
