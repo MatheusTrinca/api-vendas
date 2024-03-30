@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Exclude, Expose } from 'class-transformer';
 
 @Entity('users')
 class User {
@@ -17,6 +18,7 @@ class User {
   @Column()
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 

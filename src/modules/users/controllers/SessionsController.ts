@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
 import CreateSessionsService from '../services/CreateSessionsService';
+import { instanceToInstance } from 'class-transformer';
 
 class SessionsController {
-
   public async create(request: Request, response: Response): Promise<Response> {
-    const {email, password} = request.body;
+    const { email, password } = request.body;
 
     const createSessionsService = new CreateSessionsService();
 
     const user = await createSessionsService.execute({
       email,
-      password
-    })
+      password,
+    });
 
-    return response.json(user);
+    return response.json(instanceToInstance(user));
   }
 }
 
