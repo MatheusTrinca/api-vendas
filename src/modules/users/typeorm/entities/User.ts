@@ -22,6 +22,12 @@ class User {
   @Column()
   password: string;
 
+  @Expose({ name: 'avatar_url' })
+  getAvatarUrl() {
+    if (!this.avatar) return null;
+    return `${process.env.APP_API_URL}/files/${this.avatar}`;
+  }
+
   @Column()
   avatar: string;
 
