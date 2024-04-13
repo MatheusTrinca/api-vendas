@@ -3,6 +3,7 @@ import User from '../typeorm/entities/User';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import bcrypt, { hash } from 'bcryptjs';
+import { RedisCache } from '@shared/cache/Redis';
 
 interface IRequest {
   user_id: string;
@@ -53,6 +54,10 @@ class UpdateProfileService {
 
     user.name = name;
     user.email = email;
+
+    const redisCache = new RedisCache();
+
+    await redisCache.invalidate('api-vendas-USER_LIST');
 
     await usersRepository.save(user);
 

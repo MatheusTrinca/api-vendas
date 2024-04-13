@@ -1,6 +1,7 @@
 import { getCustomRepository } from 'typeorm';
 import Customer from '../typeorm/entities/Customer';
 import CustomersRepository from '../typeorm/repositories/CustomersRepository';
+import { RedisCache } from '@shared/cache/Redis';
 
 interface IPaginateResponse {
   from: number;
@@ -18,7 +19,17 @@ class ListCustomerService {
   public async execute(): Promise<IPaginateResponse> {
     const customersRepository = getCustomRepository(CustomersRepository);
 
-    const customers = await customersRepository.createQueryBuilder().paginate();
+    const redisCache = new RedisCache();
+
+    let customers = await redisCache.recover<IPaginateResponse>(
+      'api-vendas-CUSTOMER_LIST',
+    );
+
+    if (!customers) {
+      customers = await customersRepository.createQueryBuilder().paginate();
+
+      await redisCache.save('api-vendas-CUSTOMER_LIST', customers);
+    }
 
     return customers;
   }

@@ -2,6 +2,7 @@ import { getCustomRepository } from 'typeorm';
 import CustomersRepository from '../typeorm/repositories/CustomersRepository';
 import AppError from '@shared/errors/AppError';
 import Customer from '../typeorm/entities/Customer';
+import { RedisCache } from '@shared/cache/Redis';
 
 interface IRequest {
   id: string;
@@ -21,6 +22,10 @@ class UpdateCustomerService {
 
     customer.name = name;
     customer.email = email;
+
+    const redisCache = new RedisCache();
+
+    await redisCache.invalidate('api-vendas-CUSTOMER_LIST');
 
     await customersRepository.save(customer);
 

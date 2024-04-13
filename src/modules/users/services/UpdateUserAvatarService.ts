@@ -5,6 +5,7 @@ import AppError from '@shared/errors/AppError';
 import path from 'path';
 import uploadConfig from '@config/upload';
 import fs from 'fs';
+import { RedisCache } from '@shared/cache/Redis';
 
 interface IRequest {
   user_id: string;
@@ -31,6 +32,10 @@ class UpdateUserAvatarService {
     }
 
     user.avatar = avatarFileName;
+
+    const redisCache = new RedisCache();
+
+    await redisCache.invalidate('api-vendas-USER_LIST');
 
     await usersRepository.save(user);
 
