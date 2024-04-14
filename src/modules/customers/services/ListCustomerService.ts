@@ -1,7 +1,7 @@
-import { getCustomRepository } from 'typeorm';
-import Customer from '../typeorm/entities/Customer';
-import CustomersRepository from '../typeorm/repositories/CustomersRepository';
+import Customer from '../infra/typeorm/entities/Customer';
 import { RedisCache } from '@shared/cache/Redis';
+import { inject, injectable } from 'tsyringe';
+import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
 
 interface IPaginateResponse {
   from: number;
@@ -15,10 +15,14 @@ interface IPaginateResponse {
   data: Customer[];
 }
 
+@injectable()
 class ListCustomerService {
-  public async execute(): Promise<IPaginateResponse> {
-    const customersRepository = getCustomRepository(CustomersRepository);
+  constructor(
+    @inject('CustomersRepository')
+    private customersRepository: ICustomersRepository,
+  ) {}
 
+  public async execute(): Promise<IPaginateResponse> {
     const redisCache = new RedisCache();
 
     let customers = await redisCache.recover<IPaginateResponse>(
@@ -26,7 +30,7 @@ class ListCustomerService {
     );
 
     if (!customers) {
-      customers = await customersRepository.createQueryBuilder().paginate();
+      customers = await this.customersRepository.findAll();
 
       await redisCache.save('api-vendas-CUSTOMER_LIST', customers);
     }
