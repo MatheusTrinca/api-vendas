@@ -3,12 +3,7 @@ import Customer from '../infra/typeorm/entities/Customer';
 import { RedisCache } from '@shared/cache/Redis';
 import { inject, injectable } from 'tsyringe';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
-
-interface IRequest {
-  id: string;
-  name: string;
-  email: string;
-}
+import { IUpdateCustomer } from '../domain/models/IUpdateCustomer';
 
 @injectable()
 class UpdateCustomerService {
@@ -17,7 +12,11 @@ class UpdateCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute({ id, name, email }: IRequest): Promise<Customer> {
+  public async execute({
+    id,
+    name,
+    email,
+  }: IUpdateCustomer): Promise<Customer> {
     const customer = await this.customersRepository.findById(id);
 
     if (!customer) {

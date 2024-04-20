@@ -2,10 +2,7 @@ import Customer from '../infra/typeorm/entities/Customer';
 import AppError from '@shared/errors/AppError';
 import { inject, injectable } from 'tsyringe';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
-
-interface IRequest {
-  id: string;
-}
+import { IShowCustomer } from '../domain/models/IShowCustomer';
 
 @injectable()
 class ShowCustomerService {
@@ -14,7 +11,7 @@ class ShowCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute({ id }: IRequest): Promise<Customer | undefined> {
+  public async execute({ id }: IShowCustomer): Promise<Customer | undefined> {
     const customer = await this.customersRepository.findById(id);
 
     if (!customer) {

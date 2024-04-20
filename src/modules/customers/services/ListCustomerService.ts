@@ -2,19 +2,7 @@ import Customer from '../infra/typeorm/entities/Customer';
 import { RedisCache } from '@shared/cache/Redis';
 import { inject, injectable } from 'tsyringe';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
-
-interface IPaginateResponse {
-  from: number;
-  to: number;
-  per_page: number;
-  total: number;
-  current_page: number;
-  prev_page?: number | undefined | null;
-  next_page?: number | undefined | null;
-  last_page: number | null;
-  data: Customer[];
-}
-
+import { ICustomerPaginate } from '../domain/models/ICustomerPaginate';
 @injectable()
 class ListCustomerService {
   constructor(
@@ -22,10 +10,10 @@ class ListCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute(): Promise<IPaginateResponse> {
+  public async execute(): Promise<ICustomerPaginate> {
     const redisCache = new RedisCache();
 
-    let customers = await redisCache.recover<IPaginateResponse>(
+    let customers = await redisCache.recover<ICustomerPaginate>(
       'api-vendas-CUSTOMER_LIST',
     );
 

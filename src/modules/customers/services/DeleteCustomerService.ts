@@ -2,10 +2,7 @@ import AppError from '@shared/errors/AppError';
 import { RedisCache } from '@shared/cache/Redis';
 import { inject, injectable } from 'tsyringe';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
-
-interface IRequest {
-  id: string;
-}
+import { IDeleteCustomer } from '../domain/models/IDeleteCustomer';
 
 @injectable()
 class DeleteCustomerService {
@@ -14,7 +11,7 @@ class DeleteCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute({ id }: IRequest): Promise<void> {
+  public async execute({ id }: IDeleteCustomer): Promise<void> {
     const customer = await this.customersRepository.findById(id);
 
     if (!customer) {

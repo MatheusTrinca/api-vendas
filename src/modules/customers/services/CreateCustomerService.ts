@@ -3,11 +3,7 @@ import { RedisCache } from '@shared/cache/Redis';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
 import { inject, injectable } from 'tsyringe';
 import { ICustomer } from '../domain/models/ICustomer';
-
-interface IRequest {
-  name: string;
-  email: string;
-}
+import { ICreateCostumer } from '../domain/models/ICreateCustumer';
 
 @injectable()
 class CreateCustomerService {
@@ -16,7 +12,7 @@ class CreateCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute({ name, email }: IRequest): Promise<ICustomer> {
+  public async execute({ name, email }: ICreateCostumer): Promise<ICustomer> {
     const emailExists = await this.customersRepository.findByEmail(email);
 
     if (emailExists) {
