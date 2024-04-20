@@ -1,6 +1,12 @@
 import { ICustomer } from '../models/ICustomer';
 import { ICreateCostumer } from '../models/ICreateCustumer';
-import { IPaginateResponse } from './IPaginateResponse';
+import { ICustomerPaginate } from '../models/ICustomerPaginate';
+
+export type SearchParams = {
+  page: number;
+  skip: number;
+  take: number;
+};
 
 export interface ICustomersRepository {
   create(data: ICreateCostumer): Promise<ICustomer>;
@@ -9,7 +15,7 @@ export interface ICustomersRepository {
 
   remove(customer: ICustomer): Promise<void>;
 
-  findAll(): Promise<IPaginateResponse>;
+  findAll(params: SearchParams): Promise<ICustomerPaginate>;
 
   findByName(name: string): Promise<ICustomer | undefined>;
 

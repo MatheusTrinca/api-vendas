@@ -1,9 +1,12 @@
 import { Repository, getRepository } from 'typeorm';
 import Customer from '../entities/Customer';
-import { ICustomersRepository } from '@modules/customers/domain/repositories/ICustomersRepository';
+import {
+  ICustomersRepository,
+  SearchParams,
+} from '@modules/customers/domain/repositories/ICustomersRepository';
 import { ICreateCostumer } from '@modules/customers/domain/models/ICreateCustumer';
 import { ICustomer } from '@modules/customers/domain/models/ICustomer';
-import { IPaginateResponse } from '@modules/customers/domain/repositories/IPaginateResponse';
+import { ICustomerPaginate } from '@modules/customers/domain/models/ICustomerPaginate';
 
 class CustomersRepository implements ICustomersRepository {
   private ormRepository: Repository<Customer>;
@@ -30,10 +33,25 @@ class CustomersRepository implements ICustomersRepository {
     await this.ormRepository.remove(customer);
   }
 
-  public async findAll(): Promise<IPaginateResponse> {
-    const customers = await this.ormRepository.createQueryBuilder().paginate();
+  public async findAll({
+    page,
+    skip,
+    take,
+  }: SearchParams): Promise<ICustomerPaginate> {
+    const [customers, count] = await this.ormRepository
+      .createQueryBuilder()
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
-    return customers;
+    const result = {
+      per_page: take,
+      total: count,
+      current_page: page,
+      data: customers,
+    };
+
+    return result;
   }
 
   public async findByName(name: string): Promise<Customer | undefined> {

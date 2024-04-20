@@ -1,8 +1,13 @@
-import Customer from '../infra/typeorm/entities/Customer';
 import { RedisCache } from '@shared/cache/Redis';
 import { inject, injectable } from 'tsyringe';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
 import { ICustomerPaginate } from '../domain/models/ICustomerPaginate';
+
+interface SearchParams {
+  page: number;
+  limit: number;
+}
+
 @injectable()
 class ListCustomerService {
   constructor(
@@ -10,7 +15,13 @@ class ListCustomerService {
     private customersRepository: ICustomersRepository,
   ) {}
 
-  public async execute(): Promise<ICustomerPaginate> {
+  public async execute({
+    page,
+    limit,
+  }: SearchParams): Promise<ICustomerPaginate> {
+    const take = limit;
+    const skip = (page - 1) * limit;
+
     const redisCache = new RedisCache();
 
     let customers = await redisCache.recover<ICustomerPaginate>(
@@ -18,7 +29,7 @@ class ListCustomerService {
     );
 
     if (!customers) {
-      customers = await this.customersRepository.findAll();
+      customers = await this.customersRepository.findAll({ page, skip, take });
 
       await redisCache.save('api-vendas-CUSTOMER_LIST', customers);
     }
