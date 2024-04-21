@@ -1,7 +1,7 @@
-import User from '@modules/users/typeorm/entities/User';
+import User from '@modules/users/infra/typeorm/entities/User';
 import { hash } from 'bcryptjs';
 import { getCustomRepository } from 'typeorm';
-import UsersRepository from '../typeorm/repositories/UsersRepository';
+import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import { RedisCache } from '@shared/cache/Redis';
 
 interface IRequest {

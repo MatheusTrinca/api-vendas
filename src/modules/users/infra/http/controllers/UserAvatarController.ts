@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
+import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 import AppError from '@shared/errors/AppError';
 import { instanceToInstance } from 'class-transformer';
 

@@ -1,6 +1,6 @@
 import { getCustomRepository } from 'typeorm';
-import ProductRepository from '../typeorm/repositories/ProductRepository';
-import Product from '../typeorm/entities/Product';
+import ProductRepository from '../infra/typeorm/repositories/ProductRepository';
+import Product from '../infra/typeorm/entities/Product';
 import { RedisCache } from '@shared/cache/Redis';
 
 interface IPaginateResponse {
