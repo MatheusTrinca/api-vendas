@@ -1,4 +1,4 @@
-import OrdersProducts from '@modules/orders/infra/typeorm/entities/OrdersProducts';
+import OrderProducts from '@modules/orders/infra/typeorm/entities/OrderProducts';
 import {
   Column,
   CreateDateColumn,
@@ -13,8 +13,8 @@ class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => OrdersProducts, order_products => order_products.product)
-  order_products: OrdersProducts[];
+  @OneToMany(() => OrderProducts, order_products => order_products.product)
+  order_products: OrderProducts[];
 
   @Column()
   name: string;
