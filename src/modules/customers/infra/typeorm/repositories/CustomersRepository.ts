@@ -5,7 +5,6 @@ import {
   SearchParams,
 } from '@modules/customers/domain/repositories/ICustomersRepository';
 import { ICreateCostumer } from '@modules/customers/domain/models/ICreateCustumer';
-import { ICustomer } from '@modules/customers/domain/models/ICustomer';
 import { ICustomerPaginate } from '@modules/customers/domain/models/ICustomerPaginate';
 
 class CustomersRepository implements ICustomersRepository {
@@ -15,7 +14,7 @@ class CustomersRepository implements ICustomersRepository {
     this.ormRepository = getRepository(Customer);
   }
 
-  public async create(data: ICreateCostumer): Promise<ICustomer> {
+  public async create(data: ICreateCostumer): Promise<Customer> {
     const costumer = this.ormRepository.create(data);
 
     await this.ormRepository.save(costumer);
@@ -23,13 +22,13 @@ class CustomersRepository implements ICustomersRepository {
     return costumer;
   }
 
-  public async save(costumer: ICustomer): Promise<ICustomer> {
+  public async save(costumer: Customer): Promise<Customer> {
     const custumer = await this.ormRepository.save(costumer);
 
     return custumer;
   }
 
-  public async remove(customer: ICustomer): Promise<void> {
+  public async remove(customer: Customer): Promise<void> {
     await this.ormRepository.remove(customer);
   }
 

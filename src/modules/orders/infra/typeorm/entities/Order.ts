@@ -9,10 +9,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import OrdersProducts from './OrdersProducts';
+import OrderProducts from './OrderProducts';
+import { IOrder } from '@modules/orders/domain/models/IOrder';
 
 @Entity('orders')
-class Order {
+class Order implements IOrder {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,10 +24,10 @@ class Order {
   @Column('uuid')
   customer_id: string;
 
-  @OneToMany(() => OrdersProducts, order_products => order_products.order, {
+  @OneToMany(() => OrderProducts, order_products => order_products.order, {
     cascade: true,
   })
-  order_products: OrdersProducts[];
+  order_products: OrderProducts[];
 
   @CreateDateColumn()
   created_at: Date;
