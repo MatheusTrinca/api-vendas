@@ -20,6 +20,8 @@ ordersRouter.post(
   ordersController.create,
 );
 
+ordersRouter.get('/', ordersController.index);
+
 ordersRouter.get(
   '/:id',
   celebrate({

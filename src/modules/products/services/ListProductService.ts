@@ -1,32 +1,35 @@
-import { getCustomRepository } from 'typeorm';
-import ProductRepository from '../infra/typeorm/repositories/ProductRepository';
-import Product from '../infra/typeorm/entities/Product';
 import { RedisCache } from '@shared/cache/Redis';
+import { IProductPaginate } from '../domain/models/IProductPaginate';
+import { IProductsRepository } from '../domain/repositories/IProductRepositories';
+import { inject, injectable } from 'tsyringe';
 
-interface IPaginateResponse {
-  from: number;
-  to: number;
-  per_page: number;
-  total: number;
-  current_page: number;
-  prev_page?: number | undefined | null;
-  next_page?: number | undefined | null;
-  last_page: number | null;
-  data: Product[];
+interface SearchParams {
+  page: number;
+  limit: number;
 }
 
+@injectable()
 class ListProductService {
-  public async execute(): Promise<IPaginateResponse> {
-    const productsRepository = getCustomRepository(ProductRepository);
+  constructor(
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+
+  public async execute({
+    page,
+    limit,
+  }: SearchParams): Promise<IProductPaginate> {
+    const take = limit;
+    const skip = (page - 1) * limit;
 
     const redisCache = new RedisCache();
 
-    let products = await redisCache.recover<IPaginateResponse>(
+    let products = await redisCache.recover<IProductPaginate>(
       'api-vendas-PRODUCT_LIST',
     );
 
     if (!products) {
-      products = await productsRepository.createQueryBuilder().paginate();
+      products = await this.productsRepository.findAll({ page, skip, take });
 
       await redisCache.save('api-vendas-PRODUCT_LIST', products);
     }

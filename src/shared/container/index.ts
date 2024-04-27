@@ -3,6 +3,8 @@ import { ICustomersRepository } from '@modules/customers/domain/repositories/ICu
 import CustomersRepository from '@modules/customers/infra/typeorm/repositories/CustomersRepository';
 import { IOrdersRepository } from '@modules/orders/domain/repositories/IOrdersRepository';
 import OrdersRepository from '@modules/orders/infra/typeorm/repositories/OrdersRepository';
+import { IProductsRepository } from '@modules/products/domain/repositories/IProductRepositories';
+import ProductRepository from '@modules/products/infra/typeorm/repositories/ProductRepository';
 
 container.registerSingleton<ICustomersRepository>(
   'CustomersRepository',
@@ -12,4 +14,9 @@ container.registerSingleton<ICustomersRepository>(
 container.registerSingleton<IOrdersRepository>(
   'OrdersRepository',
   OrdersRepository,
+);
+
+container.registerSingleton<IProductsRepository>(
+  'ProductsRepository',
+  ProductRepository,
 );
