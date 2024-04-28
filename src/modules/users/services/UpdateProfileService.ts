@@ -1,10 +1,10 @@
-import User from '../infra/typeorm/entities/User';
 import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import bcrypt, { hash } from 'bcryptjs';
 import { RedisCache } from '@shared/cache/Redis';
 import { IUpdateUser } from '../domain/models/IUpdateUser';
 import { inject, injectable } from 'tsyringe';
+import { IUser } from '../domain/models/IUser';
 
 @injectable()
 class UpdateProfileService {
@@ -19,7 +19,7 @@ class UpdateProfileService {
     email,
     password,
     old_password,
-  }: IUpdateUser): Promise<User> {
+  }: IUpdateUser): Promise<IUser> {
     const user = await this.usersRepository.findById(user_id);
 
     if (!user) {

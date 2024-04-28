@@ -1,8 +1,8 @@
-import User from '../infra/typeorm/entities/User';
 import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import { IShowUser } from '../domain/models/IShowUser';
 import { inject, injectable } from 'tsyringe';
+import { IUser } from '../domain/models/IUser';
 
 @injectable()
 class ShowProfileService {
@@ -11,7 +11,7 @@ class ShowProfileService {
     private usersRepository: UsersRepository,
   ) {}
 
-  public async execute({ user_id }: IShowUser): Promise<User> {
+  public async execute({ user_id }: IShowUser): Promise<IUser> {
     const user = await this.usersRepository.findById(user_id);
 
     if (!user) {

@@ -1,4 +1,3 @@
-import User from '@modules/users/infra/typeorm/entities/User';
 import { hash } from 'bcryptjs';
 import { RedisCache } from '@shared/cache/Redis';
 import { ICreateUser } from '../domain/models/ICreateUser';

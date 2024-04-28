@@ -1,5 +1,3 @@
-import { getCustomRepository } from 'typeorm';
-import User from '../infra/typeorm/entities/User';
 import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import path from 'path';
@@ -8,6 +6,7 @@ import fs from 'fs';
 import { RedisCache } from '@shared/cache/Redis';
 import { IUdpdateAvatar } from '../domain/models/IUdpdateAvatar';
 import { inject, injectable } from 'tsyringe';
+import { IUser } from '../domain/models/IUser';
 
 @injectable()
 class UpdateUserAvatarService {
@@ -21,7 +20,7 @@ class UpdateUserAvatarService {
   public async execute({
     user_id,
     avatarFilename,
-  }: IUdpdateAvatar): Promise<User> {
+  }: IUdpdateAvatar): Promise<IUser> {
     const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
