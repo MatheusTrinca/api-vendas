@@ -1,35 +1,32 @@
-import { getCustomRepository } from 'typeorm';
 import User from '../infra/typeorm/entities/User';
 import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import bcrypt, { hash } from 'bcryptjs';
 import { RedisCache } from '@shared/cache/Redis';
+import { IUpdateUser } from '../domain/models/IUpdateUser';
+import { inject, injectable } from 'tsyringe';
 
-interface IRequest {
-  user_id: string;
-  name: string;
-  email: string;
-  password?: string;
-  old_password?: string;
-}
-
+@injectable()
 class UpdateProfileService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: UsersRepository,
+  ) {}
+
   public async execute({
     user_id,
     name,
     email,
     password,
     old_password,
-  }: IRequest): Promise<User> {
-    const usersRepository = getCustomRepository(UsersRepository);
-
-    const user = await usersRepository.findById(user_id);
+  }: IUpdateUser): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError('User not found', 404);
     }
 
-    const userUpdateEmail = await usersRepository.findByEmail(email);
+    const userUpdateEmail = await this.usersRepository.findByEmail(email);
 
     if (userUpdateEmail?.id !== user_id) {
       throw new AppError('There is already one user with this email.', 404);
@@ -59,7 +56,7 @@ class UpdateProfileService {
 
     await redisCache.invalidate('api-vendas-USER_LIST');
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return user;
   }

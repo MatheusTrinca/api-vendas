@@ -6,17 +6,23 @@ import path from 'path';
 import uploadConfig from '@config/upload';
 import fs from 'fs';
 import { RedisCache } from '@shared/cache/Redis';
+import { IUdpdateAvatar } from '../domain/models/IUdpdateAvatar';
+import { inject, injectable } from 'tsyringe';
 
-interface IRequest {
-  user_id: string;
-  avatarFileName: string;
-}
-
+@injectable()
 class UpdateUserAvatarService {
-  public async execute({ user_id, avatarFileName }: IRequest): Promise<User> {
-    const usersRepository = getCustomRepository(UsersRepository);
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: UsersRepository,
+    // @inject('RedisCache')
+    // private redisCache: RedisCache
+  ) {}
 
-    const user = await usersRepository.findById(user_id);
+  public async execute({
+    user_id,
+    avatarFilename,
+  }: IUdpdateAvatar): Promise<User> {
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError('User not found', 404);
@@ -31,13 +37,13 @@ class UpdateUserAvatarService {
       }
     }
 
-    user.avatar = avatarFileName;
+    user.avatar = avatarFilename;
 
     const redisCache = new RedisCache();
 
     await redisCache.invalidate('api-vendas-USER_LIST');
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return user;
   }

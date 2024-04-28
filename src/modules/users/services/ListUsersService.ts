@@ -1,32 +1,30 @@
-import { getCustomRepository } from 'typeorm';
-import User from '../infra/typeorm/entities/User';
 import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import { RedisCache } from '@shared/cache/Redis';
+import { IUserPaginate } from '../domain/models/IUserPaginate';
+import { inject, injectable } from 'tsyringe';
 
-interface IPaginateResponse {
-  from: number;
-  to: number;
-  per_page: number;
-  total: number;
-  current_page: number;
-  prev_page?: number | undefined | null;
-  next_page?: number | undefined | null;
-  last_page: number | null;
-  data: User[];
-}
+type SearchParams = {
+  page: number;
+  limit: number;
+};
 
+@injectable()
 class ListUsersService {
-  public async execute(): Promise<IPaginateResponse> {
-    const usersRepository = getCustomRepository(UsersRepository);
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: UsersRepository,
+  ) {}
+
+  public async execute({ page, limit }: SearchParams): Promise<IUserPaginate> {
+    const take = limit;
+    const skip = (page - 1) * limit;
 
     const redisCache = new RedisCache();
 
-    let users = await redisCache.recover<IPaginateResponse>(
-      'api-vendas-USER_LIST',
-    );
+    let users = await redisCache.recover<IUserPaginate>('api-vendas-USER_LIST');
 
     if (!users) {
-      users = await usersRepository.createQueryBuilder().paginate();
+      users = await this.usersRepository.findAll({ page, skip, take });
 
       await redisCache.save('api-vendas-USER_LIST', users);
     }

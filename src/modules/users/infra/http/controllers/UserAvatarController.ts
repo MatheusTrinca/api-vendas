@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 import AppError from '@shared/errors/AppError';
 import { instanceToInstance } from 'class-transformer';
+import { container } from 'tsyringe';
 
 class UserAvatarController {
   public async update(request: Request, response: Response): Promise<Response> {
-    const updateUserAvatarService = new UpdateUserAvatarService();
+    const updateUserAvatarService = container.resolve(UpdateUserAvatarService);
 
     if (!request.file) {
       throw new AppError('File not found');
@@ -13,7 +14,7 @@ class UserAvatarController {
 
     const user = await updateUserAvatarService.execute({
       user_id: request.user.id,
-      avatarFileName: request.file.filename,
+      avatarFilename: request.file.filename,
     });
 
     return response.json(instanceToInstance(user));

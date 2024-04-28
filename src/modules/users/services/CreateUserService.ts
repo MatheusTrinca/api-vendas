@@ -1,20 +1,20 @@
 import User from '@modules/users/infra/typeorm/entities/User';
 import { hash } from 'bcryptjs';
-import { getCustomRepository } from 'typeorm';
-import UsersRepository from '../infra/typeorm/repositories/UsersRepository';
 import { RedisCache } from '@shared/cache/Redis';
+import { ICreateUser } from '../domain/models/ICreateUser';
+import { inject, injectable } from 'tsyringe';
+import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import { IUser } from '../domain/models/IUser';
 
-interface IRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
+injectable();
 class CreateUserService {
-  public async execute({ name, email, password }: IRequest): Promise<User> {
-    const usersRepository = getCustomRepository(UsersRepository);
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
 
-    const userExists = await usersRepository.findByEmail(email);
+  public async execute({ name, email, password }: ICreateUser): Promise<IUser> {
+    const userExists = await this.usersRepository.findByEmail(email);
 
     if (userExists) {
       throw new Error('Email address already used.');
@@ -22,7 +22,7 @@ class CreateUserService {
 
     const hashedPassword = await hash(password, 8);
 
-    const user = usersRepository.create({
+    const user = await this.usersRepository.create({
       name,
       email,
       password: hashedPassword,
@@ -32,7 +32,7 @@ class CreateUserService {
 
     await redisCache.invalidate('api-vendas-USER_LIST');
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return user;
   }

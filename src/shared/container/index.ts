@@ -5,6 +5,10 @@ import { IOrdersRepository } from '@modules/orders/domain/repositories/IOrdersRe
 import OrdersRepository from '@modules/orders/infra/typeorm/repositories/OrdersRepository';
 import { IProductsRepository } from '@modules/products/domain/repositories/IProductRepositories';
 import ProductRepository from '@modules/products/infra/typeorm/repositories/ProductRepository';
+import { IUsersRepository } from '@modules/users/domain/repositories/IUsersRepository';
+import UsersRepository from '@modules/users/infra/typeorm/repositories/UsersRepository';
+import { IUserTokensRepository } from '@modules/users/domain/repositories/IUserTokensRepository';
+import UserTokensRepository from '@modules/users/infra/typeorm/repositories/UserTokensRepository';
 
 container.registerSingleton<ICustomersRepository>(
   'CustomersRepository',
@@ -19,4 +23,14 @@ container.registerSingleton<IOrdersRepository>(
 container.registerSingleton<IProductsRepository>(
   'ProductsRepository',
   ProductRepository,
+);
+
+container.registerSingleton<IUsersRepository>(
+  'UsersRepository',
+  UsersRepository,
+);
+
+container.registerSingleton<IUserTokensRepository>(
+  'UserTokensRepository',
+  UserTokensRepository,
 );
