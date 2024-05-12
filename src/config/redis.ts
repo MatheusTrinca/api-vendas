@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { RedisOptions } from 'ioredis';
 
 interface ICacheConfig {
